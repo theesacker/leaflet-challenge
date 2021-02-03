@@ -1,0 +1,94 @@
+
+// Adding Tile Layer
+var greyscaleMap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+  attribution: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
+  tileSize: 512,
+  maxZoom: 18,
+  zoomOffset: -1,
+  id: "mapbox/light-v10",
+  accessToken: API_KEY
+});
+// Satellite Layer
+var satelliteMap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+  attribution: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
+  tileSize: 512,
+  maxZoom: 18,
+  zoomOffset: -1,
+  id: "mapbox/satellite-v9",
+  accessToken: API_KEY
+});
+// Outdoor Layer
+var outdoorMap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+  attribution: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
+  tileSize: 512,
+  maxZoom: 18,
+  zoomOffset: -1,
+  id: "mapbox/outdoors-v11",
+  accessToken: API_KEY
+});
+var myMap = L.map("mapid", {
+  center:[39.83, -98.58],
+  zoom: 5,
+  layers: [greyscaleMap, satelliteMap, outdoorMap]
+});
+greyscaleMap.addTo(myMap);
+
+    // Determine Marker size
+    function circleInfo(feature) {
+      return{
+        opacity: 1,
+        fillOpacity: 1,
+        fillColor: chooseColor(feature.geometry.coordinates[2]),
+        radius: circleSize(feature.properties.mag),
+        stroke: true,
+        weight: 0.5
+      };
+    }
+    function circleSize(magnitude){
+      if (magnitude === 0){
+        return 1;
+      }
+      return magnitude *3;
+    }
+    function chooseColor(magnitude){
+      switch(true) {
+        case magnitude > 10:
+          return "red";
+        case magnitude > 8:
+          return "OrangeRed";
+        case magnitude > 6:
+          return "Orange";
+        case magnitude >  4:
+          return "yellow";
+        case magnitude > 2:
+          return "YellowGreen"
+        default:
+          return "green";
+
+
+      }
+    }
+
+var link = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
+
+d3.json(link).then(function(earthquakeData) {
+    console.log(earthquakeData); 
+    L.geoJson(earthquakeData,{
+      pointToLayer: function(feature, latlng){
+        return L.circleMarker(latlng);
+      },
+      style: circleInfo
+    }).addTo(myMap);
+  
+    });
+var baseMaps = {
+  "Grey Scale": greyscaleMap,
+  "Satellite": satelliteMap,
+  "Outdoors": outdoorMap
+};
+
+// add layer to control map
+L.control.layers(baseMaps, overlayMaps, {
+  collapsed: false
+}).addTo(myMap);
+    
