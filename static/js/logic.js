@@ -28,10 +28,13 @@ var outdoorMap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x
 });
 var myMap = L.map("mapid", {
   center:[39.83, -98.58],
-  zoom: 5,
+  zoom: 3,
   layers: [greyscaleMap, satelliteMap, outdoorMap]
 });
 greyscaleMap.addTo(myMap);
+
+var earthquake = new L.layerGroup();
+var tectonicplates = new L.layerGroup();
 
     // Determine Marker size
     function circleInfo(feature) {
@@ -78,7 +81,8 @@ d3.json(link).then(function(earthquakeData) {
         return L.circleMarker(latlng);
       },
       style: circleInfo
-    }).addTo(myMap);
+    }).addTo(earthquake);
+    earthquake.addTo(myMap);
   
     });
 var baseMaps = {
@@ -86,6 +90,23 @@ var baseMaps = {
   "Satellite": satelliteMap,
   "Outdoors": outdoorMap
 };
+var overlayMaps = {
+  "Earth Quakes": earthquake,
+  "Tectronic Plates": tectonicplates
+};
+// Create tectonic plate map
+
+var tecLink = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json";
+
+
+d3.json(tecLink).then(function(tectronicData) { 
+  L.geoJson(tectronicData,{
+    color:"orange",
+    weight: 1.5
+    }).addTo(tectonicplates);
+  tectonicplates.addTo(myMap);
+
+  });
 
 // add layer to control map
 L.control.layers(baseMaps, overlayMaps, {
