@@ -80,7 +80,10 @@ d3.json(link).then(function(earthquakeData) {
       pointToLayer: function(feature, latlng){
         return L.circleMarker(latlng);
       },
-      style: circleInfo
+      style: circleInfo,
+      onEachFeature: function(feature, layer){
+        layer.bindPopup(`Location: ${feature.properties.place} <br> Magnitude: ${feature.properties.mag}`)
+      }
     }).addTo(earthquake);
     earthquake.addTo(myMap);
   
