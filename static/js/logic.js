@@ -53,24 +53,14 @@ var tectonicplates = new L.layerGroup();
       }
       return magnitude *3;
     }
-    function chooseColor(magnitude){
-      switch(true) {
-        case magnitude > 10:
-          return "red";
-        case magnitude > 8:
-          return "OrangeRed";
-        case magnitude > 6:
-          return "Orange";
-        case magnitude >  4:
-          return "yellow";
-        case magnitude > 2:
-          return "YellowGreen"
-        default:
-          return "green";
-
-
-      }
-    }
+    function chooseColor(depth){
+        return depth >= 90 ? '#800026' :
+                depth >= 70  ? '#BD0026' :
+                depth >= 50  ? '#E31A1C' :
+                depth >= 30  ? '#FC4E2A' :
+                depth >= 10   ? '#FD8D3C' :
+                   '#FFEDA0';
+    };
 
 var link = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
 
@@ -94,7 +84,7 @@ var baseMaps = {
   "Outdoors": outdoorMap
 };
 var overlayMaps = {
-  "Earth Quakes": earthquake,
+  "Earthquakes": earthquake,
   "Tectronic Plates": tectonicplates
 };
 // Create tectonic plate map
